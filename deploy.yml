@@ -1,0 +1,15 @@
+---
+- name: Deploy AWS stacks
+  gather_facts: false
+  hosts:
+    - localhost
+  vars:
+    aws_region: us-west-2
+  tasks:
+    - include_tasks: vpc.yml
+      vars:
+        stack_name: vpc-stack
+        template_file: files/vpc.yml
+        stack_state: present
+        stack_tags:
+          name: vpc
