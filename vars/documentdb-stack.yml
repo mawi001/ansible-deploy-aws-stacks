@@ -1,0 +1,10 @@
+---
+template_file: files/documentdb_full_stack-with-right-vpc.yaml
+template_parameters:
+  DBInstanceClass: test
+  MasterUser: test
+  MasterPassword: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: documentdb

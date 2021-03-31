@@ -1,0 +1,380 @@
+Description:
+    This template deploys a VPC, with multiple private subnets spread
+    across three Availability Zones. It deploys a pair of NAT Gateways (one in each AZ),
+    and default routes for them in the private subnets
+Parameters:
+    ToolsDTVpcCIDR:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        Default: 172.60.0.0/16
+    OPSSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for  EKS private subnet in the first Availability Zone
+        Type: String
+        Default: 172.60.10.2/24
+    AMPSDTVpcCIDR:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        Default: 10.30.0.0/16
+    AMPSSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for  EKS private subnet in the first Availability Zone
+        Type: String
+        Default: 10.30.10.2/24
+    DTVpcCIDR:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        Default: 10.2.0.0/16
+    EKSSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for  EKS private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.20.0/24
+    EKSSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for EKS private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.10.2/24
+    EKSSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for EKS private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.11.0/24
+    RDSSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for RDS private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.42.0/24
+    RDSSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for RDS private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.92.0/24
+    RDSSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for RDS private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.142.0/24
+    BatchSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Batch private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.43.0/24
+    BatchSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for Batch private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.93.0/24
+    BatchSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Batch private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.143.0/24
+    MgmtVPCPrivateSubnetCIDR:
+        Description: Please enter the IP range (CIDR notation) for Management VPC Private Subnet
+        Type: String
+        Default: 192.168.3.0/24
+    MgmtVPCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Management VPC
+        Type: String
+        Default: 192.168.0.0/16
+    IGCIDR:
+        Description: Please enter the IP range (CIDR notation) for Internet gateway
+        Type: String
+        Default: 0.0.0.0/0
+    ClusterVersion:
+        Description: Cluster Version
+        Type: String
+        Default: "1.14"
+    EnvironmentName:
+        Type: String
+        Description: The VPC of the worker instances
+    DTVpcId:
+        Description: Please enter the VPC Id
+        Type: String
+        Default: vpc-0e9afcf329734347f
+    InternetGateway:
+        Type: String
+        Description: The Internet GatewaysId
+        Default: igw-05f8410ed7ac8652c
+    VirginiaVPCPeering:
+        Type: String
+        Description: The VirginiaVPCPeering Id
+        Default: vpc-0fa5310d5a2e8c4cb
+    KafkaSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Kafka private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.45.0/24
+    KafkaSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for Kafka private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.95.0/24
+    KafkaSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Kafka private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.145.0/24
+    NifiSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Nifi private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.46.0/24
+    NifiSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for Nifi private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.96.0/24
+    NifiSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Nifi private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.146.0/24
+    CassandraSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Cassandra private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.47.0/24
+    CassandraSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for Cassandra private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.97.0/24
+    CassandraSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Cassandra private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.147.0/24
+    HbaseSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Hbase private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.48.0/24
+    HbaseSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for Hbase private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.98.0/24
+    HbaseSubnetZoneCCIDR:
+        Description: Please enter the IP range (CIDR notation) for Hbase private subnet in the third Availability Zone
+        Type: String
+        Default: 10.2.148.0/24
+    AnalyticsSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for Analytics private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.49.0/24
+    LiteboxSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for 3DliteBox private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.62.0/24
+    EtlSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for ETL private subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.61.0/24
+    RescaSubnetZoneBCIDR:
+        Description: Please enter the IP range (CIDR notation) for RESCA private subnet in the second Availability Zone
+        Type: String
+        Default: 10.2.57.0/24
+    NATSubnetZoneACIDR:
+        Description: Please enter the IP range (CIDR notation) for NAT public subnet in the first Availability Zone
+        Type: String
+        Default: 10.2.100.0/24
+Resources:
+
+    EKSSubnetZoneAPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 0, !GetAZs '' ]
+            CidrBlock: !Ref EKSSubnetZoneACIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-EKS-subnet-zone-a-private
+    EKSSubnetZoneBPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 1, !GetAZs '' ]
+            CidrBlock: !Ref EKSSubnetZoneBCIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-EKS-subnet-zone-b-private
+    EKSSubnetZoneCPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 2, !GetAZs '' ]
+            CidrBlock: !Ref EKSSubnetZoneCCIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-EKS-subnet-zone-c-private
+
+# Setup networking resources for the public subnets. Containers
+# in the public subnets have public IP addresses and the routing table
+# sends network traffic via the internet gateway.
+
+    PublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref 'DTVpcId'
+    EKSRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref 'DTVpcId'
+        Tags:
+            - Key: Name
+              Value: !Sub ${EnvironmentName}-EKS-CM-RT
+    EKSSubnetZoneARouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref EKSSubnetZoneAPrivate
+        RouteTableId: !Ref EKSRouteTable
+    EKSSubnetZoneBRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref EKSSubnetZoneBPrivate
+        RouteTableId: !Ref EKSRouteTable
+    EKSSubnetZoneCRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref EKSSubnetZoneCPrivate
+        RouteTableId: !Ref EKSRouteTable
+    NATSubnetZoneAPublic:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 0, !GetAZs '' ]
+            CidrBlock: !Ref NATSubnetZoneACIDR
+            MapPublicIpOnLaunch: true
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-nat-subnet-zone-a-public
+    PublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId: !Ref 'PublicRouteTable'
+        DestinationCidrBlock: !Ref IGCIDR
+        GatewayId: !Ref 'InternetGateway'
+    PublicSubnetThreeRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref NATSubnetZoneAPublic
+        RouteTableId: !Ref PublicRouteTable
+    EIP:
+      Type: 'AWS::EC2::EIP'
+      Properties:
+        Domain: vpc
+    NatGateway:
+      Type: 'AWS::EC2::NatGateway'
+      Properties:
+        AllocationId: !GetAtt 'EIP.AllocationId'
+        SubnetId: !Ref NATSubnetZoneAPublic
+    Route:
+      Type: 'AWS::EC2::Route'
+      Properties:
+        RouteTableId: !Ref EKSRouteTable
+        DestinationCidrBlock: '0.0.0.0/0'
+        NatGatewayId: !Ref NatGateway
+    RDSSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Sub ${EnvironmentName}-RDS-security-group
+            GroupDescription: !Sub ${EnvironmentName}-RDS-security-group
+            VpcId: !Ref DTVpcId
+            SecurityGroupIngress:
+               - IpProtocol: tcp
+                 CidrIp: 0.0.0.0/0
+                 FromPort: 5432
+                 ToPort: 5432
+               - IpProtocol: -1
+                 CidrIp: 172.20.0.0/16
+                 Description: test-vpc
+            SecurityGroupEgress:
+                - IpProtocol: -1
+                  CidrIp: !Ref DTVpcCIDR
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-RDS-security-group
+    EKSSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Sub ${EnvironmentName}-EKS-security-group
+            GroupDescription: !Sub ${EnvironmentName}-EKS-security-group
+            VpcId: !Ref DTVpcId
+            SecurityGroupIngress:
+               - IpProtocol: -1
+                 CidrIp: !Ref EKSSubnetZoneACIDR
+                 Description: !Sub ${EnvironmentName}-EKS-subnet-zone-a-private
+               - IpProtocol: -1
+                 CidrIp: !Ref EKSSubnetZoneBCIDR
+                 Description: !Sub ${EnvironmentName}-EKS-subnet-zone-b-private
+               - IpProtocol: -1
+                 CidrIp: !Ref EKSSubnetZoneCCIDR
+                 Description: !Sub ${EnvironmentName}-EKS-subnet-zone-c-private
+               - IpProtocol: -1
+                 CidrIp: 10.2.0.0/16
+                 Description: test-vpc
+            SecurityGroupEgress:
+                - IpProtocol: -1
+                  CidrIp: !Ref DTVpcCIDR
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-EKS-security-group
+
+    RDSSubnetZoneAPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 0, !GetAZs '' ]
+            CidrBlock: !Ref RDSSubnetZoneACIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-rds-subnet-zone-a-private
+    RDSSubnetZoneBPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 1, !GetAZs '' ]
+            CidrBlock: !Ref RDSSubnetZoneBCIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-rds-subnet-zone-b-private
+    RDSSubnetZoneCPrivate:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref DTVpcId
+            AvailabilityZone: !Select [ 2, !GetAZs '' ]
+            CidrBlock: !Ref RDSSubnetZoneCCIDR
+            MapPublicIpOnLaunch: false
+            Tags:
+                - Key: Name
+                  Value: !Sub ${EnvironmentName}-rds-subnet-zone-c-private
+
+Outputs:
+    VPC:
+        Description: A reference to the created VPC
+        Value: !Ref DTVpcId
+    EKSSubnetZoneAPrivate:
+        Description: A reference to EKS private subnet in the 1st Availability Zone
+        Value: !Ref EKSSubnetZoneAPrivate
+    EKSSubnetZoneBPrivate:
+        Description: A reference to EKS private subnet in the 2nd Availability Zone
+        Value: !Ref EKSSubnetZoneBPrivate
+    EKSSubnetZoneCPrivate:
+        Description: A reference to EKS private subnet in the 3nd Availability Zone
+        Value: !Ref EKSSubnetZoneCPrivate
+    RDSSubnetZoneACIDR:
+        Description: A reference to RDS private subnet in the 1st Availability Zone
+        Value: !Ref RDSSubnetZoneACIDR
+    RDSSubnetZoneBCIDR:
+        Description: A reference to RDS private subnet in the 2nd Availability Zone
+        Value: !Ref RDSSubnetZoneBCIDR
+    RDSSubnetZoneCCIDR:
+        Description: A reference to RDS private subnet in the 3nd Availability Zone
+        Value: !Ref RDSSubnetZoneCCIDR
+    RDSSubnetZoneAPrivate:
+        Description: A reference to RDS private subnet in the 1st Availability Zone
+        Value: !Ref RDSSubnetZoneAPrivate
+    RDSSubnetZoneBPrivate:
+        Description: A reference to RDS private subnet in the 2nd Availability Zone
+        Value: !Ref RDSSubnetZoneBPrivate
+    RDSSubnetZoneCPrivate:
+        Description: A reference to RDS private subnet in the 3nd Availability Zone
+        Value: !Ref RDSSubnetZoneCPrivate
+    NATSubnetZoneAPublic:
+        Description: A reference to NAT private subnet in the 3nd Availability Zone
+        Value: !Ref NATSubnetZoneAPublic
+    EKSSecurityGroup:
+        Description: A reference to EKSSecurityGroup
+        Value: !Ref EKSSecurityGroup
+    RDSSecurityGroup:
+        Description: A reference to RDSSecurityGroup
+        Value:
+            Ref: RDSSecurityGroup
+    EnvironmentName:
+        Description: A reference to EnvironmentName
+        Value: !Sub ${EnvironmentName}

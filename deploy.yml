@@ -5,11 +5,59 @@
     - localhost
   vars:
     aws_region: us-west-2
+    stack_ignore_errors: true
+    manage_vpc: true
+    manage_vpc_subnets: true
+    manage_eks_controlplane: true
+    manage_eks_workers: true
+    manage_redis: true
+    manage_documentdb: true
+    manage_emr: true
+    manage_control_machine: true
+    manage_msk: true
+
   tasks:
-    - include_tasks: vpc.yml
+    - include_tasks: cloudformation_stack.yml
       vars:
         stack_name: vpc-stack
-        template_file: files/vpc.yml
-        stack_state: present
-        stack_tags:
-          name: vpc
+      when: manage_vpc
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: vpc-subnets-stack
+      when: manage_vpc_subnets
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: eks-controlplane-stack
+      when: manage_eks_controlplane
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: eks-workers-stack
+      when: manage_eks_workers
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: redis-stack
+      when: manage_redis
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: documentdb-stack
+      when: manage_documentdb
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: emr-stack
+      when: manage_emr
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: control-machine-stack
+      when: manage_control_machine
+
+    - include_tasks: cloudformation_stack.yml
+      vars:
+        stack_name: msk-stack
+      when: manage_msk

@@ -1,0 +1,6 @@
+---
+template_file: files/vpc.yml
+template_parameters: {}
+stack_state: present
+stack_tags:
+  name: vpc

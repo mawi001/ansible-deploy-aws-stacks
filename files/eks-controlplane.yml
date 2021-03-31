@@ -1,0 +1,73 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EKS Control plane creation template
+Parameters:
+  ClusterVersion:
+    Description: Cluster Version
+    Type: String
+    Default: "1.17"
+  EKSClusterName:
+    Type: String
+    Description: The VPC of the worker instances
+    Default: "test-env"
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: The VPC of the worker instances
+    Default: vpc-05a0e9043c8e410ad
+  EKSSubnetZoneAPrivate:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: The ID of the public subnet in Availability Zone 1 in your existing VPC (e.g., subnet-a0246dcd)
+    Default: subnet-0d668d443caaed0fb
+  EKSSubnetZoneBPrivate:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: The ID of the public subnet in Availability Zone 2 in your existing VPC (e.g., subnet-b1236eea)
+    Default: subnet-08e031bfd77d59881
+  EKSSubnetZoneCPrivate:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: The ID of the public subnet in Availability Zone 3 in your existing VPC (e.g., subnet-c3456aba)
+    Default: subnet-040375892a2bb9ad2
+  EKSControlPlaneSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup::Id"
+    Description: The ID of the public subnet in Availability Zone 3 in your existing VPC (e.g., subnet-c3456aba)
+    Default: sg-03586eb75022361bb
+Resources:
+    EKSCluster:
+        Type: "AWS::EKS::Cluster"
+        Properties:
+          Name: !Ref EKSClusterName
+          ResourcesVpcConfig:
+            SecurityGroupIds:
+                - !Ref ControlPlaneSecurityGroup
+            SubnetIds:
+                - !Ref EKSSubnetZoneAPrivate
+                - !Ref EKSSubnetZoneBPrivate
+                - !Ref EKSSubnetZoneCPrivate
+          RoleArn: !GetAtt EksServiceRole.Arn
+          Version: !Ref ClusterVersion
+    ControlPlaneSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+          GroupDescription: Cluster communication with worker nodes
+          VpcId: !Ref VpcId
+    EksServiceRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Effect: "Allow"
+                    Principal:
+                        Service:
+                          - "eks.amazonaws.com"
+                    Action:
+                      - "sts:AssumeRole"
+            Path: "/"
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+                - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+            RoleName: !Sub "EksSvcRole-${AWS::StackName}"
+Outputs:
+  EKSClusterName:
+    Description: The EKS cluster name
+    Value: !Ref EKSCluster

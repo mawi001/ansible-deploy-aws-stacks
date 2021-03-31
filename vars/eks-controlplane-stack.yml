@@ -1,0 +1,6 @@
+---
+template_file: files/eks-controlplane.yml
+stack_state: present
+on_create_failure: DO_NOTHING
+stack_tags:
+  name: eks-controlplane

@@ -1,0 +1,11 @@
+---
+template_file: files/msk.yml
+template_parameters:
+  KeyPair: test
+  PrivateSubnet1: test
+  PrivateSubnet2: test
+  VPC: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: msk

@@ -1,0 +1,10 @@
+---
+template_file: files/control-machine-storrm.yml
+template_parameters:
+  KeyName: test
+  SubnetZoneAPrivate: test
+  SSHSecurityGroup: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: control-machine

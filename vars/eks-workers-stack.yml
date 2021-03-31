@@ -1,0 +1,8 @@
+---
+template_file: files/eks-managed-worker-nodes.yml
+template_parameters:
+  EnvironmentName: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: eks-workers

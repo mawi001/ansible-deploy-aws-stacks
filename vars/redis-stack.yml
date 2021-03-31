@@ -1,0 +1,10 @@
+---
+template_file: files/redis-new-trial-24-v2.yml
+template_parameters:
+  SubnetA: test
+  SubnetB: test
+  VpcId: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: redis

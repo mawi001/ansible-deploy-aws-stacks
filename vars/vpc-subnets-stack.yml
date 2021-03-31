@@ -1,0 +1,8 @@
+---
+template_file: files/vpc-subnet-sg-platform-cr.yml
+template_parameters:
+  EnvironmentName: test
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: vpc-subnets

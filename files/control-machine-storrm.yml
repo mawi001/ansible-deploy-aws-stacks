@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: 'AWS CloudFormation Sample Template EKSControlMachineWithSecurityGroupSample:
+  Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based
+  on the region in which the stack is run. This example creates an EC2 security group
+  for the instance to give you SSH access. **WARNING** This template creates an Amazon
+  EC2 instance. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: 'magic-cluster-key'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: The security group of the cluster control plane.
+    Default: AWSTemplateFormatVersion:'2010-09-09'
+Metadata:
+  License: Apache-2.0
+Description: 'AWS CloudFormation Sample Template EKSControlMachineWithSecurityGroupSample:
+  Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based
+  on the region in which the stack is run. This example creates an EC2 security group
+  for the instance to give you SSH access. **WARNING** This template creates an Amazon
+  EC2 instance. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: 'magic-cluster-key'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: The security group of the cluster control plane.
+    Default: sg-0d76078e821ac6b04
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t2.large
+    AllowedValues: [t2.nano, t2.large, t2.small, t2.medium]
+    ConstraintDescription: must be a valid EC2 instance type.
+  SubnetZoneAPrivate:
+    Type: "AWS::EC2::Subnet::Id"
+    Description: The ID of the public subnet in Availability Zone 1 in your existing VPC (e.g., subnet-a0246dcd)
+    Default: subnet-0636925c2d8f082e8
+  LatestAmiId:
+    Description: AMI id for the control machine instance.
+    Type: AWS::EC2::Image::Id
+    Default: ami-0a36eb8fadc976275
+  InstanceName:
+    Type: String
+    Description: The InstanceName
+    Default: control-machine
+
+Resources:
+
+    EKSControlMachine:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: "ami-0a36eb8fadc976275"
+            InstanceType: "t2.large"
+            KeyName: !Ref KeyName
+            NetworkInterfaces:
+                  - AssociatePublicIpAddress: true
+                    DeviceIndex: "0"
+                    GroupSet:
+                      - Ref: "SSHSecurityGroup"
+                    SubnetId:
+                      Ref: "SubnetZoneAPrivate"
+            Tags:
+                -
+                    Key: "purpose"
+                    Value: "CloudFormationTesting"
+            Tags:
+                -
+                    Key: "Name"
+                    Value: !Ref InstanceName
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref 'EKSControlMachine'
+  AZ:
+    Description: Availability Zone of the newly created EC2 instance
+    Value: !GetAtt [EKSControlMachine, AvailabilityZone]
+  PrivateIP:
+    Description: Private IP address of the newly created EC2 instance
+    Value: !GetAtt [EKSControlMachine, PrivateIp]

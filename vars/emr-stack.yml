@@ -1,0 +1,7 @@
+---
+template_file: files/emr-cluster.yml
+template_parameters: {}
+on_create_failure: DO_NOTHING
+stack_state: present
+stack_tags:
+  name: emr

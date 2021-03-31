@@ -1,0 +1,13 @@
+- name: Include vars for {{ stack_name }}
+  include_vars: "vars/{{ stack_name }}.yml"
+
+- name: "Manage cloudformation stack {{ stack_name }}"
+  amazon.aws.cloudformation:
+    stack_name: "{{ stack_name }}"
+    state: "{{ stack_state }}"
+    region: "{{ aws_region }}"
+    template: "{{ template_file }}"
+    on_create_failure: "{{ on_create_failure | default('DELETE') }}"
+    template_parameters: "{{ template_parameters | default('{}') }}"
+    tags: "{{ stack_tags }}"
+  ignore_errors: "{{ stack_ignore_errors }}"

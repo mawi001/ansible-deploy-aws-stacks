@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Best Practice EMR Cluster for Spark or S3 backed Hbase
+Parameters:
+  EMRClusterName:
+    Description: Name of the cluster
+    Type: String
+    Default: toyo-emr-test
+  KeyName:
+    Description: Must be an existing Keyname
+    Type: String
+    Default: magic-cluster-key
+  MasterInstanceType:
+    Description: Instance type to be used for the master instance.
+    Type: String
+    Default: m5.xlarge
+  CoreInstanceType:
+    Description: Instance type to be used for core instances.
+    Type: String
+    Default: m5.xlarge
+  NumberOfCoreInstances:
+    Description: Must be a valid number
+    Type: Number
+    Default: 1
+  SubnetID:
+    Description: Must be Valid public subnet ID
+    Default: subnet-0df9cd9bf1c10e10d
+    Type: String
+  LogUri:
+    Description: Must be a valid S3 URL
+    Default: 's3://aws-logs-978611800276-us-west-2/elasticmapreduce/'
+    Type: String
+  S3DataUri:
+    Description: 'Must be a valid S3 bucket URL '
+    Default: 's3://tccc-platform-automation/emr/'
+    Type: String
+  ReleaseLabel:
+    Description: Must be a valid EMR release  version
+    Default: emr-5.32.0
+    Type: String
+Resources:
+  EMRCluster:
+    DependsOn:
+      - EMRClusterServiceRole
+      - EMRClusterinstanceProfileRole
+      - EMRClusterinstanceProfile
+    Type: 'AWS::EMR::Cluster'
+    Properties:
+      Applications:
+        - Name: JupyterHub
+        - Name: HBase
+        - Name: ZooKeeper
+        - Name: Hive
+      Instances:
+        Ec2KeyName:
+          Ref: KeyName
+        Ec2SubnetId:
+          Ref: SubnetID
+        MasterInstanceGroup:
+          InstanceCount: 1
+          InstanceType:
+            Ref: MasterInstanceType
+          Market: ON_DEMAND
+          Name: Master
+        CoreInstanceGroup:
+          InstanceCount:
+            Ref: NumberOfCoreInstances
+          InstanceType:
+            Ref: CoreInstanceType
+          Market: ON_DEMAND
+          Name: Core
+        TerminationProtected: false
+      VisibleToAllUsers: true
+      JobFlowRole:
+        Ref: EMRClusterinstanceProfile
+      ReleaseLabel:
+        Ref: ReleaseLabel
+      LogUri:
+        Ref: LogUri
+      Name:
+        Ref: EMRClusterName
+      AutoScalingRole: EMR_AutoScaling_DefaultRole
+      ServiceRole:
+        Ref: EMRClusterServiceRole
+  EMRClusterServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - elasticmapreduce.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole'
+      Path: /
+  EMRClusterinstanceProfileRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role'
+      Path: /
+  EMRClusterinstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - Ref: EMRClusterinstanceProfileRole
+Outputs:
+  ClusterID:
+    Description: the EMR cluster ID
+    Value:
+      Ref: EMRCluster
